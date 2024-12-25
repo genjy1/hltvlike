@@ -55,16 +55,35 @@ app.get('/api/player/:name', async (req, res) => {
     }
   })
 
-  app.get('/api/news', async(req, res) => {
+  app.get('/api/news', async (req, res) => {
     try {
+      // Получаем параметры пагинации из запроса
+      const page = parseInt(req.query.page) || 1;  // Номер страницы, по умолчанию 1
+      const limit = parseInt(req.query.limit) || 10;  // Количество новостей на странице, по умолчанию 10
+  
+      // Получаем все новости
       const news = await HLTV.getNews();
-
-      res.json(news)
-    }catch(error){
-      console.error(error)
-      res.status(500).send(error)
+  
+      // Рассчитываем индекс начала и конца для текущей страницы
+      const startIndex = (page - 1) * limit;
+      const endIndex = page * limit;
+  
+      // Отбираем новости для текущей страницы
+      const paginatedNews = news.slice(startIndex, endIndex);
+  
+      // Отправляем ответ с новостями и дополнительной информацией о пагинации
+      res.json({
+        currentPage: page,
+        totalPages: Math.ceil(news.length / limit),
+        totalNews: news.length,
+        news: paginatedNews
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error);
     }
-  })
+  });
+  
   
   // Запуск сервера
   app.listen(port, () => {
