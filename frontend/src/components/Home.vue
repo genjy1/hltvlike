@@ -11,7 +11,7 @@ let news = ref({})
 
 const getNews = async() => {
   const request = await axios.get('http://localhost:5000/api/news')
-  const requestedNews = request.data.news
+  const requestedNews = request.data
 
   news.value = requestedNews
 }
