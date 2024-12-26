@@ -2,6 +2,7 @@ import Events from '@/components/Events.vue'
 import Home from '@/components/Home.vue'
 import PlayerRankings from '@/components/PlayerRankings.vue'
 import Rankings from '@/components/Rankings.vue'
+import ShowPlayer from '@/components/ShowPlayer.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -26,6 +27,11 @@ const router = createRouter({
       path:'/events',
       name:'events',
       component:Events
+    },
+    {
+      path:'/player/:id/:name',
+      name:'showPlayer',
+      component: ShowPlayer
     }
   ],
 })

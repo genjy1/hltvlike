@@ -8,7 +8,11 @@ const featured = ref(false)
 const getEvents = async () => {
   try {
     const request = await axios.get('/events');
+
+    console.log(request.data)
     events.value = request.data;
+    console.log('events ref variable value', events.value);
+
   } catch (error) {
     console.error('Error fetching events:', error);
   }
@@ -19,16 +23,11 @@ onMounted(getEvents);
 
 <template>
   <div class="mx-auto my-0 w-4/5">
-    <div class="filter flex justify-between w-2/5 mb-4">
-      <button class="filter-btn border px-4 py-2 rounded-xl" @click="featured = false">Прошедшие</button><button class="filter-btn border px-4 py-2 rounded-xl">Идущие</button><button class="filter-btn border px-4 py-2 rounded-xl" @click="featured = true">Будущие</button>
+    <div v-for="event in events">
+      <ul v-if="event.location && event.location.code == 'KZ'">
+        <li>{{ event.name + ' '}}</li>
+        <li v-if="event.location">Location: {{ event.location?.name || '' }} <img :src="`https://hltv.org/img/static/flags/30x20/${event.location.code}.gif`" v-if="event.location?.code">  </li>
+      </ul>
     </div>
-    <ul class="grid grid-cols-6 gap-4">
-      <li v-for="event in events" :key="event.id" class="border p-4" v-if="featured">
-        {{ event.name }}
-        {{ new Date(event.dateStart).toLocaleDateString('ru') }}
-        <!-- Проверяем наличие location перед попыткой вывода -->
-        {{ event.location?.name || '' }}
-      </li>
-    </ul>
   </div>
 </template>

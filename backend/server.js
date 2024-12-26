@@ -29,14 +29,31 @@ async function getOrFetch(cacheKey, fetchFunction) {
   return freshData; // Возвращаем свежие данные
 }
 
+
+app.get('/api/player/:id/image', async (req, res) => {
+  const playerId = req.params.id;
+
+  const player = await HLTV.getPlayer({id:playerId});
+
+  res.json({image : player.image});
+})
+
 // API: Получение игрока
-app.get('/api/player/:name', async (req, res) => {
-  const playerName = req.params.name;
+app.get('/api/player/:id/', async (req, res) => {
+  const playerId = req.params.id;
+
+  const player = await HLTV.getPlayer({id:playerId});
+
+  res.json(player);
+})
+
+app.get('/api/player/:id', async (req, res) => {
+  const playerName = req.params.id;
   const cacheKey = `player-${playerName}`;
 
   try {
     const player = await getOrFetch(cacheKey, async () => {
-      const fetchedPlayer = await HLTV.getPlayerByName({ name: playerName });
+      const fetchedPlayer = await HLTV.getPlayer({ id: playerName });
       return {
         name: fetchedPlayer.name,
         image: fetchedPlayer.image,
@@ -93,7 +110,6 @@ app.get('/api/teamRanking', async (req, res) => {
   }
 });
 
-// API: Рейтинг игроков
 app.get('/api/playerRanking', async (req, res) => {
   const date = new Date();
   const year = date.getFullYear();
@@ -102,17 +118,32 @@ app.get('/api/playerRanking', async (req, res) => {
   const dateString = `${year}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`;
   const cacheKey = `playerRanking-${dateString}`;
 
+  // Get pagination parameters from query (default values for page = 1 and limit = 10)
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const startIndex = (page - 1) * limit; // Calculate the starting index for pagination
+
   try {
     const playerRanking = await getOrFetch(cacheKey, async () => {
       return await HLTV.getPlayerRanking({ date: dateString });
     });
 
-    res.json(playerRanking);
+    // Paginate the results based on the start index and limit
+    const paginatedRanking = playerRanking.slice(startIndex, startIndex + limit);
+
+    // Include metadata such as total count and current page
+    res.json({
+      players: paginatedRanking,
+      totalPlayers: playerRanking.length,
+      page,
+      limit,
+    });
   } catch (error) {
     console.error('Error retrieving player ranking:', error);
     res.status(500).send({ error: 'Failed to retrieve player ranking' });
   }
 });
+
 
 // API: Новости
 app.get('/api/news', async (req, res) => {

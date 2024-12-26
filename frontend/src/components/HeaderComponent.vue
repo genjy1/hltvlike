@@ -1,12 +1,12 @@
 <template>
-  <header :class="{'scrolled': isScrolled}">
-    <div class="header-container w-4/5 mx-auto my-0 py-2 flex justify-between border rounded px-4 bg-white">
+  <header :class="{'scrolled': isScrolled}" class="fixed ">
+    <div class="header-container w-4/5 mx-auto  py-2 flex justify-between border rounded px-4 bg-white top-0">
       <div class="logo-wrapper">
         <RouterLink to="/" class="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
           ESNHub
         </RouterLink>
       </div>
-      <nav class="header-nav">
+      <nav class="header-nav hidden sm:block">
         <ul class="nav-list flex justify-between gap-8">
           <li>
             <RouterLink to="/rankings">Team Ranking</RouterLink>
@@ -19,6 +19,7 @@
           </li>
         </ul>
       </nav>
+      <div class="burger-wrapper flex justify-between flex-col sm:hidden"><span class="block h-1 w-8 bg-black"></span><span class="block h-1 w-8 bg-black"></span><span class="block h-1 w-8 bg-black"></span></div>
     </div>
   </header>
 </template>
@@ -55,25 +56,6 @@ header {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-/* Эффект при прокрутке */
-header.scrolled {
-  background-color: rgba(255, 255, 255, 0.9);
-  transform: translateY(-10px); /* Поднимаем хедер чуть вверх */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Анимация появления */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Стили для ссылок */
 a:hover:not(.logo) {
   text-decoration: underline 2px;
@@ -87,16 +69,7 @@ a:hover:not(.logo) {
   background: -webkit-linear-gradient(315deg, #42d392 25%, #647eff);
 }
 
-/* Дополнительные настройки для адаптивности */
-@media (max-width: 768px) {
-  .header-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-  }
-  .nav-list {
-    flex-direction: column;
-    gap: 12px;
-  }
+.burger-wrapper > span{
+  border-radius: 4px;
 }
 </style>
